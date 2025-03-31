@@ -34,6 +34,9 @@ const InnerContainer = styled.div`
 const ResultScreen: FC = () => {
   const { result, quizTopic } = useQuiz();
 
+  console.log('RSULT', result);
+  
+
   const onClickRetry = () => {
     refreshPage()
   }

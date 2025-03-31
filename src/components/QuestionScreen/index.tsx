@@ -75,6 +75,7 @@ const QuestionScreen: FC = () => {
     setResult,
     setCurrentScreen,
     timer,
+    quizTopic,
     setTimer,
     setEndTime,
   } = useQuiz()
@@ -83,6 +84,9 @@ const QuestionScreen: FC = () => {
 
   const { question, type, choices, code, image } = currentQuestion
   // console.log('choices', choices);
+
+  console.log('result', result);
+  
   
   const onClickNext = () => {
    
@@ -120,6 +124,11 @@ const QuestionScreen: FC = () => {
     }
   }
 
+  const totalSum = result.reduce((sum, item) => {
+    const value = Number(Object.values(item)[0]); // Acessa o valor e converte para número
+    return sum + value;
+  }, 0); 
+  
   const handleModal = () => {
     setCurrentScreen(ScreenTypes.ResultScreen)
     document.body.style.overflow = 'auto'
@@ -134,6 +143,9 @@ const QuestionScreen: FC = () => {
 
   // timer hooks, handle conditions related to time
   useTimer(timer, quizDetails, setEndTime, setTimer, setShowTimerModal, showResultModal)
+
+  console.log('RESULTTTT', totalSum, quizTopic);
+  
 
   return (
     <PageCenter>
@@ -164,8 +176,11 @@ const QuestionScreen: FC = () => {
       {/* timer or finish quiz modal*/}
       {(showTimerModal || showResultModal) && (
         <ModalWrapper
-          title={showResultModal ? 'Feito!' : 'Your time is up!'}
-          subtitle="Veja o resultado"
+          title={showResultModal ? 'Feito!' : ''}
+          subtitle="Digite seu nome e email para ver seu resultado"
+          // result={result}
+          result={totalSum}
+          type={quizTopic}
           onClick={handleModal}
           icon={showResultModal ? <CheckIcon /> : <TimerIcon />}
           buttonTitle="MOSTRAR RESULTADO"
