@@ -7,6 +7,148 @@ import toast from 'react-hot-toast'
 
 // Inicializar o Resend (você precisará de uma API key)
 
+// Componentes estilizados para o formulário
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 450px;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+`;
+
+const FormTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+`;
+
+const FormDescription = styled.p`
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const InputLabel = styled.label`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+`;
+
+const Input = styled.input`
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  
+  &:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+  
+  &::placeholder {
+    color: #aaa;
+  }
+`;
+
+const InputHint = styled.span`
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.25rem;
+`;
+
+const PrivacyNote = styled.p`
+  font-size: 0.8rem;
+  color: #777;
+  text-align: center;
+  margin: 0.5rem 0;
+  font-style: italic;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+`;
+
+const SendIcon = styled.span`
+  margin-left: 8px;
+  
+  &:before {
+    content: "→";
+  }
+`;
+
+// Componentes estilizados para a mensagem de sucesso
+const SuccessContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px;
+`;
+
+const SuccessIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 2rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+`;
+
+const SuccessTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 1rem 0;
+`;
+
+const SuccessMessage = styled.div`
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  
+  p {
+    margin: 0.5rem 0;
+  }
+`;
+
+const EmailHighlight = styled.div`
+  font-weight: 600;
+  color: #4a90e2;
+  background-color: rgba(74, 144, 226, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin: 0.75rem 0;
+  word-break: break-all;
+`;
+
 const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -48,29 +190,10 @@ const ModalSubtitle = styled.p`
   margin-bottom: clamp(18px, calc(18px + 28 * ((100vw - 600px) / 1320)), 48px);
 `
 
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-`
 
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 5px;
-  font-size: 16px;
-`
 
-const SuccessMessage = styled.div`
-  font-size: 18px;
-  color: ${({ theme }) => theme.colors.success || 'green'};
-  text-align: center;
-  margin-top: 20px;
-`
+
+
 
 interface ModalWrapperProps {
   title: string
@@ -279,8 +402,9 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
   };
 const sendEmail = async (userEmail: string, userName: string, testType: string, resultText: string) => {
   try {
-    console.log('Enviando dados:', { name: userName, email: userEmail, testType, resultText });
-    
+    // Em desenvolvimento local, a URL da API será diferente da URL em produção
+    // Para testes locais com vercel dev, use /api/send-email
+    // Em produção na Vercel, também use /api/send-email
     const response = await fetch('/api/send-email', {
       method: 'POST',
       headers: {
@@ -296,29 +420,26 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
 
     // Verificar se a resposta é JSON antes de tentar fazer o parse
     const contentType = response.headers.get('content-type');
-    const textResponse = await response.text();
-    
-    console.log('Status da resposta:', response.status);
-    console.log('Resposta do servidor:', textResponse);
-    
-    let data;
-    try {
-      data = JSON.parse(textResponse);
-    } catch (e) {
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao enviar email');
+      }
+      
+      return true;
+    } else {
+      // Se não for JSON, obter o texto da resposta para depuração
+      const textResponse = await response.text();
       console.error('Resposta não-JSON do servidor:', textResponse);
       throw new Error('Resposta inesperada do servidor');
     }
-    
-    if (!response.ok) {
-      throw new Error(data.error || 'Falha ao enviar email');
-    }
-    
-    return true;
   } catch (error) {
     console.error('Erro ao enviar email:', error);
     return false;
   }
 };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -363,29 +484,63 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
         <ModalSubtitle>{subtitle}</ModalSubtitle>
         
         {showForm ? (
-          <Form onSubmit={handleSubmit}>
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nome"
-              required
-            />
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-mail"
-              required
-            />
-            <Button text={buttonTitle} onClick={handleSubmit} bold big />
-          </Form>
-        ) : (
-          <SuccessMessage>
-            <p>Seu resultado foi enviado para o email: {email}</p>
-            <Button text="Fechar" onClick={onClick} bold big />
-          </SuccessMessage>
-        )}
+  <Form onSubmit={handleSubmit}>
+    <FormTitle>Receba seu resultado por email</FormTitle>
+    <FormDescription>
+      Preencha os campos abaixo para receber uma análise detalhada do seu teste.
+    </FormDescription>
+    
+    <InputGroup>
+      <InputLabel>Nome completo</InputLabel>
+      <Input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Digite seu nome completo"
+        required
+      />
+    </InputGroup>
+    
+    <InputGroup>
+      <InputLabel>Email</InputLabel>
+      <Input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="exemplo@email.com"
+        required
+      />
+      <InputHint>Enviaremos o resultado para este email</InputHint>
+    </InputGroup>
+    
+    <PrivacyNote>
+      Seus dados estão seguros e não serão compartilhados com terceiros.
+    </PrivacyNote>
+    
+    <ButtonContainer>
+      <Button 
+        text={buttonTitle} 
+        onClick={handleSubmit} 
+        bold 
+        big 
+        icon={<SendIcon />}
+      />
+    </ButtonContainer>
+  </Form>
+) : (
+  <SuccessContainer>
+    <SuccessIcon>✓</SuccessIcon>
+    <SuccessTitle>Resultado enviado com sucesso!</SuccessTitle>
+    <SuccessMessage>
+      <p>Seu resultado detalhado foi enviado para:</p>
+      <EmailHighlight>{email}</EmailHighlight>
+      <p>Verifique sua caixa de entrada e pasta de spam.</p>
+    </SuccessMessage>
+    <ButtonContainer>
+      <Button text="Fechar" onClick={onClick} bold big />
+    </ButtonContainer>
+  </SuccessContainer>
+)}
       </ModalContent>
     </ModalContainer>
   );
