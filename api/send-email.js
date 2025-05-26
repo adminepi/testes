@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
     try {
       // Enviar o email usando o Resend
       const { data, error } = await resend.emails.send({
-        from: 'Teste de Saúde Mental <onboarding@resend.dev>', // Use o domínio de teste do Resend para testes iniciais
+        from: `'Teste de Saúde Mental <noreply@embraceinternacional.com>'`, // Use o domínio de teste do Resend para testes iniciais
         to: email,
         subject: `Resultado do seu Teste de ${testType}`,
         html: emailTemplate,
