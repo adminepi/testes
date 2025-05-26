@@ -1,10 +1,11 @@
 import { FC, useState } from 'react'
 import styled from 'styled-components'
 import Button from '../Button'
-// import { supabase } from '../../../supabaseConfig'
 import { supabase } from '../../../supabase/supabaseConfig'
-import { toNamespacedPath } from 'path'
 import toast from 'react-hot-toast'
+// Importar o Resend
+
+// Inicializar o Resend (você precisará de uma API key)
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -64,6 +65,13 @@ const Input = styled.input`
   font-size: 16px;
 `
 
+const SuccessMessage = styled.div`
+  font-size: 18px;
+  color: ${({ theme }) => theme.colors.success || 'green'};
+  text-align: center;
+  margin-top: 20px;
+`
+
 interface ModalWrapperProps {
   title: string
   subtitle: string
@@ -85,7 +93,8 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
 }) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-
+  const [showForm, setShowForm] = useState(true)
+  const [emailSent, setEmailSent] = useState(false)
 
   const getResultText = (type: string, totalResult: number): string => {
     switch (type) {
@@ -195,28 +204,156 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
     }
   };
 
+  // Função para criar o template de email
+  const createEmailTemplate = (userName: string, testType: string, resultText: string) => {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+          }
+          .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+          }
+          h1 {
+            color: #2c3e50;
+          }
+          .result {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #4a90e2;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h2>Resultado do seu Teste de ${testType}</h2>
+        </div>
+        <div class="content">
+          <p>Olá, ${userName}!</p>
+          <p>Obrigado por realizar nosso teste de ${testType}. Abaixo está o resultado da sua avaliação:</p>
+          
+          <div class="result">
+            <h3>Seu Resultado:</h3>
+            <p>${resultText}</p>
+          </div>
+          
+          <p>Lembre-se que este teste é apenas uma ferramenta de autoconhecimento e não substitui a avaliação de um profissional de saúde mental.</p>
+          
+          <p>Se você tiver alguma dúvida ou precisar de mais informações, não hesite em nos contatar.</p>
+          
+          <p>Atenciosamente,<br>Equipe de Saúde Mental</p>
+        </div>
+        <div class="footer">
+          <p>Este é um email automático. Por favor, não responda a este email.</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+const sendEmail = async (userEmail: string, userName: string, testType: string, resultText: string) => {
+  try {
+    console.log('Enviando dados:', { name: userName, email: userEmail, testType, resultText });
+    
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: userName,
+        email: userEmail,
+        testType,
+        resultText,
+      }),
+    });
+
+    // Verificar se a resposta é JSON antes de tentar fazer o parse
+    const contentType = response.headers.get('content-type');
+    const textResponse = await response.text();
+    
+    console.log('Status da resposta:', response.status);
+    console.log('Resposta do servidor:', textResponse);
+    
+    let data;
+    try {
+      data = JSON.parse(textResponse);
+    } catch (e) {
+      console.error('Resposta não-JSON do servidor:', textResponse);
+      throw new Error('Resposta inesperada do servidor');
+    }
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Falha ao enviar email');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Erro ao enviar email:', error);
+    return false;
+  }
+};
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const resultText = getResultText(type, result)
-    if(!name || !email) toast.error('digite seus dados');
+    e.preventDefault();
+    
+    if (!name || !email) {
+      toast.error('Por favor, preencha todos os campos');
+      return;
+    }
+
+    const resultText = getResultText(type, result);
 
     try {
+      // 1. Salvar no Supabase
       const { error } = await supabase
         .from('testes')
         .insert([
           { name, email, result: resultText }
-        ])
+        ]);
 
-      if (error) throw error
-      toast.success('Resultado liberado com sucesso')
-      onClick()
-      // Limpar os campos após o envio bem-sucedido
-      setName('')
-      setEmail('')
+      if (error) throw error;
+      
+      // 2. Enviar email com o resultado
+      const emailSent = await sendEmail(email, name, type, resultText);
+      
+      if (emailSent) {
+        setEmailSent(true);
+        setShowForm(false);
+        toast.success('Resultado enviado para seu email com sucesso!');
+      } else {
+        toast.error('Não foi possível enviar o email. Por favor, tente novamente.');
+      }
     } catch (error) {
-      console.error('Erro ao enviar resultado:', error)
+      console.error('Erro ao processar resultado:', error);
+      toast.error('Ocorreu um erro. Por favor, tente novamente.');
     }
-  }
+  };
 
   return (
     <ModalContainer>
@@ -225,26 +362,33 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
         <ModalTitle>{title}</ModalTitle>
         <ModalSubtitle>{subtitle}</ModalSubtitle>
         
-        <Form>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nome"
-            required
-          />
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="E-mail"
-            required
-          />
-          <Button text={buttonTitle} onClick={handleSubmit} bold big />
-        </Form>
+        {showForm ? (
+          <Form onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nome"
+              required
+            />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="E-mail"
+              required
+            />
+            <Button text={buttonTitle} onClick={handleSubmit} bold big />
+          </Form>
+        ) : (
+          <SuccessMessage>
+            <p>Seu resultado foi enviado para o email: {email}</p>
+            <Button text="Fechar" onClick={onClick} bold big />
+          </SuccessMessage>
+        )}
       </ModalContent>
     </ModalContainer>
-  )
-}
+  );
+};
 
-export default ModalWrapper
+export default ModalWrapper;

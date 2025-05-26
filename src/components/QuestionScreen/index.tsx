@@ -144,7 +144,7 @@ const QuestionScreen: FC = () => {
   // timer hooks, handle conditions related to time
   useTimer(timer, quizDetails, setEndTime, setTimer, setShowTimerModal, showResultModal)
 
-  console.log('RESULTTTT', totalSum, quizTopic);
+ 
   
 
   return (
