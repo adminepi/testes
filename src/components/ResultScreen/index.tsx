@@ -31,11 +31,36 @@ const InnerContainer = styled.div`
   }
 `
 
+const OtherTestsMessage = styled.div`
+  text-align: center;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: '#f0f7ff';
+  border-radius: 8px;
+  border-left: 5px solid '#4a90e2';
+  max-width: 600px;
+`
+
+const MessageTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: '#4a90e2';
+  margin-bottom: 10px;
+`
+
+const MessageText = styled.p`
+  font-size: 1rem;
+  line-height: 1.5;
+  color: '#333';
+  margin-bottom: 0;
+`
+
+const ButtonContainer = styled(Flex)`
+  margin-top: 15px;
+`
+
 const ResultScreen: FC = () => {
   const { result, quizTopic } = useQuiz();
-
-  console.log('RSULT', result);
-  
 
   const onClickRetry = () => {
     refreshPage()
@@ -49,15 +74,23 @@ const ResultScreen: FC = () => {
       <InnerContainer>
         <ResultOverview result={result} type={quizTopic} />        
       </InnerContainer>
-      <Flex flxEnd>
+      
+      <OtherTestsMessage>
+        <MessageTitle>Descubra mais sobre você!</MessageTitle>
+        <MessageText>
+          Conheça nossa coleção de testes gratuitos para avaliar diferentes aspectos da sua saúde mental e bem-estar emocional. Cada teste oferece insights valiosos para seu autoconhecimento.
+        </MessageText>
+      </OtherTestsMessage>
+      
+      <ButtonContainer style={{ justifyContent: 'center' }}>
         <Button
-          text="Refazer"
+          text="Refazer Teste"
           onClick={onClickRetry}
           icon={<Refresh />}
           iconPosition="left"
           bold
         />
-      </Flex>
+      </ButtonContainer>
     </ResultScreenContainer>
   )
 }

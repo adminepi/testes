@@ -480,8 +480,8 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
     <ModalContainer>
       <ModalContent>
         {icon}
-        <ModalTitle>{title}</ModalTitle>
-        <ModalSubtitle>{subtitle}</ModalSubtitle>
+        {/* <ModalTitle>{title}</ModalTitle>
+        <ModalSubtitle>{subtitle}</ModalSubtitle> */}
         
         {showForm ? (
   <Form onSubmit={handleSubmit}>

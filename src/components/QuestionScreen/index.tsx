@@ -176,8 +176,8 @@ const QuestionScreen: FC = () => {
       {/* timer or finish quiz modal*/}
       {(showTimerModal || showResultModal) && (
         <ModalWrapper
-          title={showResultModal ? 'Feito!' : ''}
-          subtitle="Digite seu nome e email para ver seu resultado"
+          title={showResultModal ? 'Veja seu email!' : ''}
+          subtitle=""
           // result={result}
           result={totalSum}
           type={quizTopic}
