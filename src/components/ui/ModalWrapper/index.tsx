@@ -163,36 +163,8 @@ const ModalContainer = styled.div`
 `
 
 const ModalContent = styled.div`
-  width: 600px;
-  padding: 50px 25px;
-  background: ${({ theme }) => theme.colors.cardBackground};
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+ 
 `
-
-const ModalTitle = styled.h6`
-  font-size: clamp(24px, 4vw, 32px);
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.themeColor};
-  margin-top: 26px;
-  margin-bottom: 20px;
-`
-
-const ModalSubtitle = styled.p`
-  font-size: 24px;
-  font-size: clamp(18px, 4vw, 24px);
-  font-weight: 500;
-  text-align: center;
-  line-height: 1.3;
-  color: ${({ theme }) => theme.colors.primaryText};
-  margin-bottom: clamp(18px, calc(18px + 28 * ((100vw - 600px) / 1320)), 48px);
-`
-
-
-
-
 
 
 interface ModalWrapperProps {
@@ -208,7 +180,6 @@ interface ModalWrapperProps {
 const ModalWrapper: FC<ModalWrapperProps> = ({
   title,
   subtitle,
-  icon,
   buttonTitle,
   onClick,
   result,
@@ -479,9 +450,6 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
   return (
     <ModalContainer>
       <ModalContent>
-        {icon}
-        {/* <ModalTitle>{title}</ModalTitle>
-        <ModalSubtitle>{subtitle}</ModalSubtitle> */}
         
         {showForm ? (
   <Form onSubmit={handleSubmit}>
@@ -528,7 +496,7 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
     </ButtonContainer>
   </Form>
 ) : (
-  <SuccessContainer>
+  < >
     <SuccessIcon>✓</SuccessIcon>
     <SuccessTitle>Resultado enviado com sucesso!</SuccessTitle>
     <SuccessMessage>
@@ -539,7 +507,7 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
     <ButtonContainer>
       <Button text="Fechar" onClick={onClick} bold big />
     </ButtonContainer>
-  </SuccessContainer>
+  </>
 )}
       </ModalContent>
     </ModalContainer>

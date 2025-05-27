@@ -71,10 +71,7 @@ const ResultScreen: FC = () => {
       <LogoContainer>
         <AppLogo />
       </LogoContainer>
-      <InnerContainer>
-        <ResultOverview result={result} type={quizTopic} />        
-      </InnerContainer>
-      
+            
       <OtherTestsMessage>
         <MessageTitle>Descubra mais sobre você!</MessageTitle>
         <MessageText>
