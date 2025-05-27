@@ -170,7 +170,6 @@ const ModalContent = styled.div`
 interface ModalWrapperProps {
   title: string
   subtitle: string
-  icon: JSX.Element
   buttonTitle: string
   onClick: () => void
   result: number
@@ -298,79 +297,7 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
     }
   };
 
-  // Função para criar o template de email
-  const createEmailTemplate = (userName: string, testType: string, resultText: string) => {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background-color: #4a90e2;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px 5px 0 0;
-          }
-          .content {
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-          }
-          h1 {
-            color: #2c3e50;
-          }
-          .result {
-            background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            border-left: 4px solid #4a90e2;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h2>Resultado do seu Teste de ${testType}</h2>
-        </div>
-        <div class="content">
-          <p>Olá, ${userName}!</p>
-          <p>Obrigado por realizar nosso teste de ${testType}. Abaixo está o resultado da sua avaliação:</p>
-          
-          <div class="result">
-            <h3>Seu Resultado:</h3>
-            <p>${resultText}</p>
-          </div>
-          
-          <p>Lembre-se que este teste é apenas uma ferramenta de autoconhecimento e não substitui a avaliação de um profissional de saúde mental.</p>
-          
-          <p>Se você tiver alguma dúvida ou precisar de mais informações, não hesite em nos contatar.</p>
-          
-          <p>Atenciosamente,<br>Equipe de Saúde Mental</p>
-        </div>
-        <div class="footer">
-          <p>Este é um email automático. Por favor, não responda a este email.</p>
-        </div>
-      </body>
-      </html>
-    `;
-  };
+  
 const sendEmail = async (userEmail: string, userName: string, testType: string, resultText: string) => {
   try {
     // Em desenvolvimento local, a URL da API será diferente da URL em produção
@@ -496,7 +423,7 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
     </ButtonContainer>
   </Form>
 ) : (
-  < >
+  <SuccessContainer>
     <SuccessIcon>✓</SuccessIcon>
     <SuccessTitle>Resultado enviado com sucesso!</SuccessTitle>
     <SuccessMessage>
@@ -507,7 +434,7 @@ const sendEmail = async (userEmail: string, userName: string, testType: string, 
     <ButtonContainer>
       <Button text="Fechar" onClick={onClick} bold big />
     </ButtonContainer>
-  </>
+  </SuccessContainer>
 )}
       </ModalContent>
     </ModalContainer>

@@ -47,76 +47,121 @@ module.exports = async (req, res) => {
     }
 
     // Criar o template de email
-    const emailTemplate = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background-color: #4a90e2;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px 5px 0 0;
-          }
-          .content {
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-          }
-          h1 {
-            color: #2c3e50;
-          }
-          .result {
-            background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            border-left: 4px solid #4a90e2;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h2>Resultado do seu Teste de ${testType}</h2>
-        </div>
-        <div class="content">
-          <p>Olá, ${name}!</p>
-          <p>Obrigado por realizar nosso teste de ${testType}. Abaixo está o resultado da sua avaliação:</p>
-          
-          <div class="result">
-            <h3>Seu Resultado:</h3>
-            <p>${resultText}</p>
-          </div>
-          
-          <p>Lembre-se que este teste é apenas uma ferramenta de autoconhecimento e não substitui a avaliação de um profissional de saúde mental.</p>
-          
-          <p>Se você tiver alguma dúvida ou precisar de mais informações, não hesite em nos contatar.</p>
-          
-          <p>Atenciosamente,<br>Equipe de Saúde Mental</p>
-        </div>
-        <div class="footer">
-          <p>Este é um email automático. Por favor, não responda a este email.</p>
-        </div>
-      </body>
-      </html>
-    `;
+   const emailTemplate = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #4a90e2;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+      }
+      .logo {
+        max-width: 200px;
+        margin: 0 auto 15px auto;
+        display: block;
+      }
+      .content {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 5px 5px;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #777;
+        padding: 15px;
+        border-top: 1px solid #eee;
+      }
+      h1 {
+        color: #2c3e50;
+      }
+      .result {
+        background-color: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+        border-left: 4px solid #4a90e2;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #4a90e2;
+        color: white;
+        text-decoration: none;
+        padding: 12px 25px;
+        border-radius: 5px;
+        font-weight: bold;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .cta-section {
+        background-color: #eef5ff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-top: 25px;
+        text-align: center;
+      }
+      .social-links {
+        margin-top: 15px;
+      }
+      .social-links a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #4a90e2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img src="https://embraceinternacional.com/logo-emb.png" alt="Embrace Internacional" class="logo">
+      <h2>Resultado do seu Teste de ${testType}</h2>
+    </div>
+    <div class="content">
+      <p>Olá, ${name}!</p>
+      <p>Obrigado por realizar nosso teste de ${testType}. Abaixo está o resultado da sua avaliação:</p>
+      
+      <div class="result">
+        <h3>Seu Resultado:</h3>
+        <p>${resultText}</p>
+      </div>
+      
+      <p>Lembre-se que este teste é apenas uma ferramenta de autoconhecimento e não substitui a avaliação de um profissional de saúde mental.</p>
+      
+      <p>Se você tiver alguma dúvida ou precisar de mais informações, não hesite em nos contatar.</p>
+      
+      <div class="cta-section">
+        <h3>Conheça mais recursos para sua saúde mental</h3>
+        <p>Visite nosso site para descobrir outros testes, artigos e recursos gratuitos para seu bem-estar emocional.</p>
+        <a href="https://www.embraceinternacional.com" class="cta-button">Visite Nosso Site</a>
+      </div>
+      
+      <p>Atenciosamente,<br>Equipe Embrace Internacional</p>
+    </div>
+    <div class="footer">
+      <p><strong>Embrace Internacional</strong> - Cuidando da sua saúde mental</p>
+      <p><a href="https://www.embraceinternacional.com">www.embraceinternacional.com</a></p>
+      <div class="social-links">
+        <a href="https://instagram.com/">Instagram</a> | 
+      </div>
+      <p>Este é um email automático. Por favor, não responda a este email.</p>
+    </div>
+  </body>
+  </html>
+`;
 
     try {
       // Enviar o email usando o Resend

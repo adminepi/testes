@@ -182,7 +182,6 @@ const QuestionScreen: FC = () => {
           result={totalSum}
           type={quizTopic}
           onClick={handleModal}
-          icon={showResultModal ? <CheckIcon /> : <TimerIcon />}
           buttonTitle="MOSTRAR RESULTADO"
         />
       )}
